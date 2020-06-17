@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">7200</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">100</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	</overall>
@@ -100,12 +100,12 @@
 		<folder>.</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">360</interval>
+			<interval units="min">1</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">1</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -121,19 +121,19 @@
 				<decay_rate units="1/min">0.1</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mmHg">38.0</initial_condition>
-			<Dirichlet_boundary_condition units="mmHg" enabled="true">38.0</Dirichlet_boundary_condition>
+			<Dirichlet_boundary_condition units="mmHg" enabled="false">38.0</Dirichlet_boundary_condition>
 		</variable>
-		<variable name="Glucose" units="Mol" ID="1">
+		<variable name="Chemical_A" units="Mol" ID="1">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">10.0</diffusion_coefficient>
 				<decay_rate units="1/min">0.1</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="Mol">10.0</initial_condition>
-			<Dirichlet_boundary_condition units="Mol" enabled="true">5.0</Dirichlet_boundary_condition>
+			<initial_condition units="Mol">0.0</initial_condition>
+			<Dirichlet_boundary_condition units="Mol" enabled="false">5.0</Dirichlet_boundary_condition>
 		</variable>
 		
 		<options>
-			<calculate_gradients>true</calculate_gradients>
+			<calculate_gradients>false</calculate_gradients>
 			<track_internalized_substrates_in_each_agent>false</track_internalized_substrates_in_each_agent>
 			<!-- not yet supported --> 
 			<initial_condition type="matlab" enabled="false">
@@ -148,12 +148,17 @@
 	
 	<user_parameters>
 		
-		<random_seed type="int" units="dimensionless">0</random_seed> 
+		<random_seed type="int" units="dimensionless" hidden="true">0</random_seed> 
+		<Apply_Dirichlet_on_right_edge type="bool">true</Apply_Dirichlet_on_right_edge>
+		<Apply_Dirichlet_on_left_edge type="bool">true</Apply_Dirichlet_on_left_edge>
+		<Apply_Dirichlet_on_top_edge type="bool">true</Apply_Dirichlet_on_top_edge>
+		<Apply_Dirichlet_on_bottom_edge type="bool">true</Apply_Dirichlet_on_bottom_edge>
+		
 		<make_Dirichlet_node type="bool">true</make_Dirichlet_node>
-		<Dirichlet_node_position_x type="double">0.0</Dirichlet_node_position_x>
-		<Dirichlet_node_position_y type="double">0.0</Dirichlet_node_position_y>
-		<Concentration_of_oxygen type="double">0.0</Concentration_of_oxygen>
-		<Concentration_of_Glucose type="double">0.0</Concentration_of_Glucose>
+		<Dirichlet_node_position_x type="double" description = "value on x-axis for dirichlet node; make sure it is within domain size">100.0</Dirichlet_node_position_x>
+		<Dirichlet_node_position_y type="double" description = "value on y-axis for dirichlet node; make sure it is within domain size">100.0</Dirichlet_node_position_y>
+		<Concentration_of_oxygen type="double"  description = "concentration of oxygen at this specific Dirichlet node">0.0</Concentration_of_oxygen>
+		<Concentration_of_Chemical_A type="double" description = "concentration of Chemical_A at this specific Dirichlet node">0.0</Concentration_of_Chemical_A>
 	</user_parameters>
 	
 </PhysiCell_settings>

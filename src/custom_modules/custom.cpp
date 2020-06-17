@@ -150,14 +150,9 @@ void create_cell_types( void )
 	
 	CellA.parameters.pReference_live_phenotype = &( CellA.phenotype ); 
 	//cell
-	int sub_index = microenvironment.find_density_index( "substrate" ); 
 	// enable random motility 
 	CellA.phenotype.motility.is_motile = false; 
-	CellA.phenotype.secretion.uptake_rates[sub_index] = 0; 
-	CellA.phenotype.secretion.secretion_rates[sub_index] = 1; 
-	CellA.phenotype.secretion.saturation_densities[sub_index] = 100; 
 	//CellA.phenotype.geometry.radius=100;
-	CellA.phenotype.volume.multiply_by_ratio(50);
 	//CellA.phenotype.motility.persistence_time = parameters.doubles( "CellA_persistence_time" ); // 15.0; 
 	//CellA.phenotype.motility.migration_speed = parameters.doubles( "CellA_migration_speed" ); // 0.25 micron/minute 
 	//CellA.phenotype.motility.migration_bias = 0.0;// completely random 
@@ -209,13 +204,75 @@ void setup_microenvironment( void )
 	// set initial conditions 
 	default_microenvironment_options.initial_condition_vector = { 38.0 }; 
 */
-	
+    initialize_microenvironment();
 	// put any custom code to set non-homogeneous initial conditions or 
 	// extra Dirichlet nodes here. 
 	
 	// initialize BioFVM 
+	bool make_Dirichlet_right=parameters.bools("Apply_Dirichlet_on_right_edge");
+	bool make_Dirichlet_left=parameters.bools("Apply_Dirichlet_on_left_edge");
+	bool make_Dirichlet_top=parameters.bools("Apply_Dirichlet_on_top_edge");
+	bool make_Dirichlet_bottom=parameters.bools("Apply_Dirichlet_on_bottom_edge");
+	if (make_Dirichlet_top==true)
+	{
+        for( unsigned int k=0 ; k < microenvironment.mesh.z_coordinates.size() ; k++ )
+		{
+			// set Dirichlet conditions along the 4 outer edges 
+			for( unsigned int i=0 ; i < microenvironment.mesh.x_coordinates.size() ; i++ )
+			{
+				//int J = microenvironment.mesh.y_coordinates.size()-1;
+				microenvironment.add_dirichlet_node( microenvironment.voxel_index(i,0,k) , default_microenvironment_options.Dirichlet_condition_vector );
+				//microenvironment.add_dirichlet_node( microenvironment.voxel_index(i,J,k) , default_microenvironment_options.Dirichlet_condition_vector );
+			}
+			
+		}
+	}
+	if (make_Dirichlet_bottom==true)
+	{
+				for( unsigned int k=0 ; k < microenvironment.mesh.z_coordinates.size() ; k++ )
+		{
+			// set Dirichlet conditions along the 4 outer edges 
+			for( unsigned int i=0 ; i < microenvironment.mesh.x_coordinates.size() ; i++ )
+			{
+				int J = microenvironment.mesh.y_coordinates.size()-1;
+				//microenvironment.add_dirichlet_node( microenvironment.voxel_index(i,0,k) , default_microenvironment_options.Dirichlet_condition_vector );
+				microenvironment.add_dirichlet_node( microenvironment.voxel_index(i,J,k) , default_microenvironment_options.Dirichlet_condition_vector );
+			}
+				
+		}
+		
+	}
+	if (make_Dirichlet_left==true)
+	{
+				for( unsigned int k=0 ; k < microenvironment.mesh.z_coordinates.size() ; k++ )
+		{
+			// set Dirichlet conditions along the 4 outer edges 
+			int I = microenvironment.mesh.x_coordinates.size()-1;
+			for( unsigned int j=1; j < microenvironment.mesh.y_coordinates.size()-1 ; j++ )
+			{
+				microenvironment.add_dirichlet_node( microenvironment.voxel_index(0,j,k) , default_microenvironment_options.Dirichlet_condition_vector );
+				//microenvironment.add_dirichlet_node( microenvironment.voxel_index(I,j,k) , default_microenvironment_options.Dirichlet_condition_vector );
+			}		
+		}
+	}
+	if (make_Dirichlet_right==true)
+	{
+		for( unsigned int k=0 ; k < microenvironment.mesh.z_coordinates.size() ; k++ )
+		{
+			// set Dirichlet conditions along the 4 outer edges 
+			int I = microenvironment.mesh.x_coordinates.size()-1;
+			for( unsigned int j=1; j < microenvironment.mesh.y_coordinates.size()-1 ; j++ )
+			{
+				//microenvironment.add_dirichlet_node( microenvironment.voxel_index(0,j,k) , default_microenvironment_options.Dirichlet_condition_vector );
+			microenvironment.add_dirichlet_node( microenvironment.voxel_index(I,j,k) , default_microenvironment_options.Dirichlet_condition_vector );
+			}		
+		}
+		
+		
+	}
 	
-	initialize_microenvironment();
+	
+
 	bool make_Dirichlet_node=parameters.bools("make_Dirichlet_node");
 	
 	
@@ -223,7 +280,7 @@ if (make_Dirichlet_node==true)
 {
 	std::vector<double> bc_vector( 2 );
 	bc_vector[0]=parameters.doubles("Concentration_of_oxygen");//getvalue
-	bc_vector[1]=parameters.doubles("Concentration_of_Glucose");//getvalue
+	bc_vector[1]=parameters.doubles("Concentration_of_Chemical_A");//getvalue
 	double x= parameters.doubles("Dirichlet_node_position_x");//getx vale:
 	double y=  parameters.doubles("Dirichlet_node_position_y");//get yvalue
 	std::vector<double> position(2);
